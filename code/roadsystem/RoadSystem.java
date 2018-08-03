@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -136,6 +137,10 @@ public class RoadSystem extends GUI {
 				currentNode = (Trie.TrieNode) r;
 			}
 		}
+		if(currentNode!=null)
+			System.out.println(currentNode.toString());
+		else
+			System.out.println("null");
 		/*
 		 * Core Search
 		
@@ -160,7 +165,6 @@ public class RoadSystem extends GUI {
 				highlightSegs.add(s);
 		}
 		*/
-		
 	}
 	
 	public void drawSegments(){
@@ -189,21 +193,11 @@ public class RoadSystem extends GUI {
 		if(m==Move.WEST){
 			this.origin = origin.moveBy(-(move), 0.0);
 		}
-					
-		double height = getDrawingAreaDimension().height;
-		double width = getDrawingAreaDimension().width;
-		
-		double dx;
-		double dy;
 		if(m==Move.ZOOM_IN){
-
 			this.scale *= this.zoom_factor;
-			
 		}
 		if(m==Move.ZOOM_OUT){
-
 			this.scale /= this.zoom_factor;
-			
 		}
 	}
 
@@ -215,6 +209,21 @@ public class RoadSystem extends GUI {
 		loadSegments(segments);
 	}
 	
+	@Override 
+	public void onScroll(MouseWheelEvent e){
+		double mouse = e.getPreciseWheelRotation();
+		if(mouse<0){
+			onMove(Move.ZOOM_IN);
+		}else{
+			onMove(Move.ZOOM_OUT);
+		}	
+	}
+	
+	@Override
+	protected void updateSearch() {
+		System.out.println("called");
+		currentNode = null;
+	}
 	/**
 	 * Reads the node file. Creates the nodes from the file and adds them to the arraylist holding the nodes.  
 	 * @param nodes
@@ -324,6 +333,8 @@ public class RoadSystem extends GUI {
 	public static void main(String[] args) {
 		new RoadSystem();
 	}
+
+	
 }
 
 // code for COMP261 assignments
