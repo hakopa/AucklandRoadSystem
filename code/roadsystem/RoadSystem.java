@@ -107,7 +107,8 @@ public class RoadSystem extends GUI {
 		//get names of roads at intersection
 		Set<String> roadNames = new HashSet<>();
 		for(Segment s : closest.getSegments()){
-			roadNames.add(roads.get(s.getRoadID()).getRoadName());
+			Road r = roads.get(s.getRoadID());
+			roadNames.add(r.getRoadName() + ", " + r.label);
 		}
 		for(String s : roadNames)
 			getTextOutputArea().append("\n" + s);
@@ -116,7 +117,7 @@ public class RoadSystem extends GUI {
 	@Override
 	protected void onSearch() {
 		String search = getSearchBox().getText().toLowerCase();
-		HashSet<Road> results = root.getAll(search);
+		HashSet<Object> results = root.getAll(search);
 		
 		//road not found
 		if(results.isEmpty()){	
@@ -125,9 +126,15 @@ public class RoadSystem extends GUI {
 		}
 		getTextOutputArea().setText("Searching for... " + search);
 		highlightSegs.clear();
-		for(Road r : results){
-			getTextOutputArea().append("\n" + r.getRoadName() + ", " + r.label);
-			highlightSegs.addAll(r.segments);
+		for(Object r : results){
+			if(r instanceof Road){
+				Road road = (Road) r;
+				getTextOutputArea().append("\n" + road.getRoadName() + ", " + road.label);
+				highlightSegs.addAll(road.segments);
+			}
+			else{
+				currentNode = (Trie.TrieNode) r;
+			}
 		}
 		/*
 		 * Core Search

@@ -7,9 +7,8 @@ import java.util.List;
 import java.util.Set;
 
 public class Trie {
-	//List<Road> roads;
-	//HashMap<Character, TrieNode> children;
 	TrieNode root;
+	
 
 	public Trie(){
 		root = new TrieNode();
@@ -31,26 +30,27 @@ public class Trie {
 		node.roads.add(r);
 	}
 
-	public HashSet<Road> getAll(String s){
-		HashSet<Road> results = new HashSet<Road>();
+	public HashSet<Object> getAll(String s){
+		HashSet<Object> results = new HashSet<Object>();
 		char[] value = s.toCharArray();
-		TrieNode node = root;
+		TrieNode node= root;
 		for(Character c : value){
 			if(!node.children.containsKey(c))
 				return null;
 			node = node.children.get(c);
 		}
 
+		results.add(node);
 		getAllFrom(node, results, s);
 		return results;
 	}
 
-	public void getAllFrom(TrieNode node, HashSet<Road> results, String s){
+	public void getAllFrom(TrieNode node, HashSet<Object> results, String s){
 
 		results.addAll(node.roads);
 		for(Road r : node.roads){
 			if(r.getRoadName().equals(s)){
-				results = new HashSet<Road>();
+				results = new HashSet<Object>();
 				results.add(r);
 				return;
 			}
@@ -67,7 +67,7 @@ public class Trie {
 
 
 
-	private class TrieNode{
+	public class TrieNode{
 		Set<Road> roads = null;
 		HashMap<Character, TrieNode> children;
 		private TrieNode(){

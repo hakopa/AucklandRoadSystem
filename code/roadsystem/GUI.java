@@ -300,8 +300,10 @@ public abstract class GUI {
 			search.addKeyListener(new KeyAdapter() {
 				public void keyReleased(KeyEvent e) {
 					// don't fire an event on backspace or delete
-					if (e.getKeyCode() == 8 || e.getKeyCode() == 127)
+					if (e.getKeyCode() == 8 || e.getKeyCode() == 127){
 						return;
+					}
+					
 					search.postActionEvent();
 				}
 			});
