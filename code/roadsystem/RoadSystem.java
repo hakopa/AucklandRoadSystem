@@ -18,10 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-
-/**
-
- */
+ /**
+  */
 public class RoadSystem extends GUI {
 	Map<Integer, Node> nodes = new HashMap<>();
 	Map<Integer, Road> roads = new HashMap<>();
@@ -40,17 +38,14 @@ public class RoadSystem extends GUI {
 	int counter = 0;
 	
 	Trie root;
-	Trie.TrieNode currentNode;
 	
 	public RoadSystem() {
 		super();
 		root = new Trie();
 	}
-
-	@Override
+ 	@Override
 	protected void redraw(Graphics g) {
-
-		//draw all road segments
+ 		//draw all road segments
 		for(List<Segment> segs : this.segments.values()){
 			for(Segment s : segs)
 				s.draw(g, scale, origin);
@@ -78,8 +73,7 @@ public class RoadSystem extends GUI {
 			s.unhighlight();
 		}
 	}
-
-	@Override
+ 	@Override
 	protected void onClick(MouseEvent e) {
 		/*
 		 * we search from the back to the front of the list (while drawing
@@ -108,17 +102,15 @@ public class RoadSystem extends GUI {
 		//get names of roads at intersection
 		Set<String> roadNames = new HashSet<>();
 		for(Segment s : closest.getSegments()){
-			Road r = roads.get(s.getRoadID());
-			roadNames.add(r.getRoadName() + ", " + r.label);
+			roadNames.add(roads.get(s.getRoadID()).getRoadName());
 		}
 		for(String s : roadNames)
 			getTextOutputArea().append("\n" + s);
 	}
-
-	@Override
+ 	@Override
 	protected void onSearch() {
 		String search = getSearchBox().getText().toLowerCase();
-		HashSet<Object> results = root.getAll(search);
+		HashSet<Road> results = root.getAll(search);
 		
 		//road not found
 		if(results.isEmpty()){	
@@ -127,20 +119,10 @@ public class RoadSystem extends GUI {
 		}
 		getTextOutputArea().setText("Searching for... " + search);
 		highlightSegs.clear();
-		for(Object r : results){
-			if(r instanceof Road){
-				Road road = (Road) r;
-				getTextOutputArea().append("\n" + road.getRoadName() + ", " + road.label);
-				highlightSegs.addAll(road.segments);
-			}
-			else{
-				currentNode = (Trie.TrieNode) r;
-			}
+		for(Road r : results){
+			getTextOutputArea().append("\n" + r.getRoadName() + ", " + r.label);
+			highlightSegs.addAll(r.segments);
 		}
-		if(currentNode!=null)
-			System.out.println(currentNode.toString());
-		else
-			System.out.println("null");
 		/*
 		 * Core Search
 		
@@ -165,6 +147,7 @@ public class RoadSystem extends GUI {
 				highlightSegs.add(s);
 		}
 		*/
+		
 	}
 	
 	public void drawSegments(){
@@ -176,8 +159,7 @@ public class RoadSystem extends GUI {
 		}
 		unhighlight(highlightSegs);
 	}
-
-	@Override
+ 	@Override
 	protected void onMove(Move m) {
 		double move = 1/this.scale*100;
 		if(m==Move.EAST){
@@ -193,15 +175,22 @@ public class RoadSystem extends GUI {
 		if(m==Move.WEST){
 			this.origin = origin.moveBy(-(move), 0.0);
 		}
+					
+		double height = getDrawingAreaDimension().height;
+		double width = getDrawingAreaDimension().width;
+		
+		double dx;
+		double dy;
 		if(m==Move.ZOOM_IN){
-			this.scale *= this.zoom_factor;
+ 			this.scale *= this.zoom_factor;
+			
 		}
 		if(m==Move.ZOOM_OUT){
-			this.scale /= this.zoom_factor;
+ 			this.scale /= this.zoom_factor;
+			
 		}
 	}
-
-	@Override
+ 	@Override
 	protected void onLoad(File nodes, File roads, File segments, File polygons) {
 		//getTextOutputArea().setText("example doesn't load any files.");
 		loadNodes(nodes);
@@ -209,21 +198,6 @@ public class RoadSystem extends GUI {
 		loadSegments(segments);
 	}
 	
-	@Override 
-	public void onScroll(MouseWheelEvent e){
-		double mouse = e.getPreciseWheelRotation();
-		if(mouse<0){
-			onMove(Move.ZOOM_IN);
-		}else{
-			onMove(Move.ZOOM_OUT);
-		}	
-	}
-	
-	@Override
-	protected void updateSearch() {
-		System.out.println("called");
-		currentNode = null;
-	}
 	/**
 	 * Reads the node file. Creates the nodes from the file and adds them to the arraylist holding the nodes.  
 	 * @param nodes
@@ -274,8 +248,7 @@ public class RoadSystem extends GUI {
 			e.printStackTrace();
 		}
 	}
-
-	/**
+ 	/**
 	 * Reads the segment file. Creates the segments from the file and adds them to the arraylist holding the segments.
 	 * @param segments
 	 */
@@ -329,12 +302,17 @@ public class RoadSystem extends GUI {
 			e.printStackTrace();
 		}
 	}
-
-	public static void main(String[] args) {
+ 	public static void main(String[] args) {
 		new RoadSystem();
 	}
-
-	
+	@Override
+	protected void updateSearch() {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	protected void onScroll(MouseWheelEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
 }
-
-// code for COMP261 assignments

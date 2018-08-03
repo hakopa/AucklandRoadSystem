@@ -32,6 +32,7 @@ public class Segment {
 		Color c = Color.BLACK;
 		if(searched){
 			c = Color.PINK;
+			System.out.println("highlighting");
 		}
 		g.setColor(c);
 		for(int i = locations.size()-1; i>0; i--){

@@ -308,7 +308,6 @@ public abstract class GUI {
 						updateSearch();
 						return;
 					}
-					
 					search.postActionEvent();
 				}
 			});
