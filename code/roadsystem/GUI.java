@@ -95,8 +95,6 @@ public abstract class GUI {
 	protected abstract void onLoad(File nodes, File roads, File segments,
 			File polygons);
 	
-	protected abstract void updateSearch();
-	
 	protected abstract void onScroll(MouseWheelEvent e);
 
 	// here are some useful methods you'll need.
@@ -305,7 +303,6 @@ public abstract class GUI {
 				public void keyReleased(KeyEvent e) {
 					// don't fire an event on backspace or delete
 					if (e.getKeyCode() == 8 || e.getKeyCode() == 127){
-						updateSearch();
 						return;
 					}
 					search.postActionEvent();

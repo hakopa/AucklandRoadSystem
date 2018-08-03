@@ -5,8 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
  public class Trie {
-	//List<Road> roads;
-	//HashMap<Character, TrieNode> children;
 	TrieNode root;
  	public Trie(){
 		root = new TrieNode();

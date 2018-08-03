@@ -7,6 +7,7 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
+import java.awt.color.*;
 
 
 public class Segment {
@@ -31,7 +32,7 @@ public class Segment {
 	public void draw(Graphics g, double scale, Location origin){
 		Color c = Color.BLACK;
 		if(searched){
-			c = Color.PINK;
+			c = Color.GREEN;
 			System.out.println("highlighting");
 		}
 		g.setColor(c);

@@ -45,12 +45,17 @@ public class RoadSystem extends GUI {
 	}
  	@Override
 	protected void redraw(Graphics g) {
+ if(!highlightSegs.isEmpty())
+	 highlight(highlightSegs);
+	 System.out.println("okay");
  		//draw all road segments
 		for(List<Segment> segs : this.segments.values()){
 			for(Segment s : segs)
 				s.draw(g, scale, origin);
+				//drawSegments();
 		}
-		if(!highlightSegs.isEmpty())	unhighlight(highlightSegs);
+		if(!highlightSegs.isEmpty())	
+			unhighlight(highlightSegs);
 		
 		//draw all nodes
 		if(current!=null) 	current.highlight();
@@ -123,6 +128,7 @@ public class RoadSystem extends GUI {
 			getTextOutputArea().append("\n" + r.getRoadName() + ", " + r.label);
 			highlightSegs.addAll(r.segments);
 		}
+		
 		/*
 		 * Core Search
 		
@@ -150,7 +156,7 @@ public class RoadSystem extends GUI {
 		
 	}
 	
-	public void drawSegments(){
+	public void highlightSegments(){
 		if(highlightSegs.isEmpty())
 			return;
 		highlight(highlightSegs);
@@ -306,13 +312,12 @@ public class RoadSystem extends GUI {
 		new RoadSystem();
 	}
 	@Override
-	protected void updateSearch() {
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
 	protected void onScroll(MouseWheelEvent e) {
-		// TODO Auto-generated method stub
+		double mouse = e.getPreciseWheelRotation();
+		if(mouse<0)
+			onMove(Move.ZOOM_IN);
+		else
+			onMove(Move.ZOOM_OUT);
 		
 	}
 }
