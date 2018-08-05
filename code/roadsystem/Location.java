@@ -105,14 +105,19 @@ public class Location {
 	 * diamond shape around this location.
 	 */
 	public boolean isClose(Location other, double dist) {
+		double d = Math.abs(this.x - other.x) + Math.abs(this.y - other.y);
 		return Math.abs(this.x - other.x) + Math.abs(this.y - other.y) <= dist;
 	}
 	
 	public Location isClosest(Location inter1, Location inter2){
-		if(distance(inter1) <= distance(inter2)){
-			return inter1;
-		}
-		return inter2;
+		double dist1 = distance(inter1);
+		double dist2 = distance(inter2);
+		if(dist1 <= dist2 && isClose(inter1, 0.05))
+				return inter1;
+		else if(dist2<dist1 && isClose(inter2, 0.05)) 
+			return inter2;
+		else 
+			return null;
 	}
 
 	public String toString() {

@@ -86,11 +86,13 @@ public class RoadSystem extends GUI {
 		//If it is, highlight this node
 		Location loc = Location.newFromPoint(new Point(e.getX(), e.getY()), origin, scale);
 		Location max = Location.newFromPoint(new Point(Integer.MAX_VALUE, Integer.MIN_VALUE), origin, scale);
-		Node closest = new Node(0, null);
+		Node closest = null;
 		for(Node n : graph.nodes.values()){
-			Location l = Location.newFromPoint(n.p, origin, scale);
+			//Location l = Location.newFromPoint(n.p, origin, scale);
+			Location l = n.location;
 			//found a closer node
-			if(loc.isClosest(max, l).equals(l)){
+			Location temp = loc.isClosest(max, l);
+			if(temp!=null && temp.equals(l)){
 				closest = n;
 				max  = l;
 			}
@@ -98,6 +100,7 @@ public class RoadSystem extends GUI {
 		current = closest;
 		
 		//print id of intersection (node)
+		if(closest!=null){
 		getTextOutputArea().append("\nNode Id : " + closest.getID());
 		//get names of roads at intersection
 		Set<String> roadNames = new HashSet<>();
@@ -106,6 +109,7 @@ public class RoadSystem extends GUI {
 		}
 		for(String s : roadNames)
 			getTextOutputArea().append("\n" + s);
+		}
 	}
  	@Override
 	protected void onSearch() {
@@ -113,14 +117,14 @@ public class RoadSystem extends GUI {
 		HashSet<Road> results = root.getAll(search);
 		
 		//road not found
-		if(results.isEmpty()){	
+		if(results==null){	
 			getTextOutputArea().setText("Street not found");
 			return;
 		}
 		getTextOutputArea().setText("Searching for... " + search);
 		highlightSegs.clear();
 		for(Road r : results){
-			getTextOutputArea().append("\n" + r.getRoadName() + ", " + r.label);
+			getTextOutputArea().append("\n" + r.getRoadName() + ", " + r.city);
 			highlightSegs.addAll(r.segments);
 		}
 		
@@ -205,7 +209,6 @@ public class RoadSystem extends GUI {
 			}
 			this.scale = getDrawingAreaDimension().getHeight()/(max-min);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
