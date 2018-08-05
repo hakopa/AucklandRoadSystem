@@ -21,9 +21,7 @@ import java.util.Set;
  /**
   */
 public class RoadSystem extends GUI {
-	Map<Integer, Node> nodes = new HashMap<>();
-	Map<Integer, Road> roads = new HashMap<>();
-	Map<Integer, List<Segment>> segments = new HashMap<Integer, List<Segment>>();
+	
 	Set<Segment> highlightSegs = new HashSet<>();
 	Location origin = Location.newFromLatLon(Location.CENTRE_LAT, Location.CENTRE_LON);
 	//use to see if zoomed in or not
@@ -35,21 +33,20 @@ public class RoadSystem extends GUI {
 	double min;
 	double max;
 	Graphics g;
-	int counter = 0;
-	
 	Trie root;
+	Graph graph;
 	
 	public RoadSystem() {
 		super();
 		root = new Trie();
+		graph = new Graph();
 	}
  	@Override
 	protected void redraw(Graphics g) {
  if(!highlightSegs.isEmpty())
 	 highlight(highlightSegs);
-	 System.out.println("okay");
  		//draw all road segments
-		for(List<Segment> segs : this.segments.values()){
+		for(List<Segment> segs : graph.segments.values()){
 			for(Segment s : segs)
 				s.draw(g, scale, origin);
 				//drawSegments();
@@ -59,21 +56,19 @@ public class RoadSystem extends GUI {
 		
 		//draw all nodes
 		if(current!=null) 	current.highlight();
-		for(Node node : nodes.values()){
+		for(Node node : graph.nodes.values()){
 			node.draw(g, scale, origin);
 		}
 		if(current!=null)	current.unhighlight();
 	}
 	
 	public void highlight(Set<Segment> high){
-		int count = 0;
 		for(Segment s : high){
 			s.highlight();
 		}
 	}
 	
 	public void unhighlight(Set<Segment> unhigh){
-		int count = 0;
 		for(Segment s : unhigh){
 			s.unhighlight();
 		}
@@ -92,7 +87,7 @@ public class RoadSystem extends GUI {
 		Location loc = Location.newFromPoint(new Point(e.getX(), e.getY()), origin, scale);
 		Location max = Location.newFromPoint(new Point(Integer.MAX_VALUE, Integer.MIN_VALUE), origin, scale);
 		Node closest = new Node(0, null);
-		for(Node n : nodes.values()){
+		for(Node n : graph.nodes.values()){
 			Location l = Location.newFromPoint(n.p, origin, scale);
 			//found a closer node
 			if(loc.isClosest(max, l).equals(l)){
@@ -107,7 +102,7 @@ public class RoadSystem extends GUI {
 		//get names of roads at intersection
 		Set<String> roadNames = new HashSet<>();
 		for(Segment s : closest.getSegments()){
-			roadNames.add(roads.get(s.getRoadID()).getRoadName());
+			roadNames.add(graph.roads.get(s.getRoadID()).getRoadName());
 		}
 		for(String s : roadNames)
 			getTextOutputArea().append("\n" + s);
@@ -155,16 +150,7 @@ public class RoadSystem extends GUI {
 		*/
 		
 	}
-	
-	public void highlightSegments(){
-		if(highlightSegs.isEmpty())
-			return;
-		highlight(highlightSegs);
-		for(Segment s : highlightSegs){
-			s.draw(g, scale, origin);
-		}
-		unhighlight(highlightSegs);
-	}
+ 	
  	@Override
 	protected void onMove(Move m) {
 		double move = 1/this.scale*100;
@@ -181,15 +167,8 @@ public class RoadSystem extends GUI {
 		if(m==Move.WEST){
 			this.origin = origin.moveBy(-(move), 0.0);
 		}
-					
-		double height = getDrawingAreaDimension().height;
-		double width = getDrawingAreaDimension().width;
-		
-		double dx;
-		double dy;
 		if(m==Move.ZOOM_IN){
  			this.scale *= this.zoom_factor;
-			
 		}
 		if(m==Move.ZOOM_OUT){
  			this.scale /= this.zoom_factor;
@@ -219,7 +198,7 @@ public class RoadSystem extends GUI {
 				double lat = Double.parseDouble(values[1]);
 				double lon = Double.parseDouble(values[2]);
 				Location loc = Location.newFromLatLon(lat,lon);
-				this.nodes.put(Integer.parseInt(values[0]), new Node(Integer.parseInt(values[0]),loc));
+				graph.nodes.put(Integer.parseInt(values[0]), new Node(Integer.parseInt(values[0]),loc));
 				
 				if(lat>=max)	max = lat;
 				if(lat<=min)	min = lat;
@@ -244,7 +223,7 @@ public class RoadSystem extends GUI {
 				Road r =  new Road(Integer.parseInt(values[0]), Integer.parseInt(values[1]), values[2], values[3],
 						Integer.parseInt(values[4]), Integer.parseInt(values[5]), Integer.parseInt(values[6]), Integer.parseInt(values[7]),
 						Integer.parseInt(values[8]), Integer.parseInt(values[9]));
-				this.roads.put(Integer.parseInt(values[0]), r);
+				graph.roads.put(Integer.parseInt(values[0]), r);
 				
 				//set up tries for searching
 				root.add(r);
@@ -267,11 +246,11 @@ public class RoadSystem extends GUI {
 				String[] values = line.split("\t");
 				int roadID = Integer.parseInt(values[0]);
 				//find the road
-				Road r = this.roads.get(roadID);
+				Road r = graph.roads.get(roadID);
 				
 				//find the two nodes
-				Node n1 = this.nodes.get(Integer.parseInt(values[2]));
-				Node n2 = this.nodes.get(Integer.parseInt(values[3]));
+				Node n1 = graph.nodes.get(Integer.parseInt(values[2]));
+				Node n2 = graph.nodes.get(Integer.parseInt(values[3]));
 				double dist = Double.parseDouble(values[1]);
 				Segment seg = new Segment(roadID, dist, n1, n2);
 				
@@ -290,12 +269,12 @@ public class RoadSystem extends GUI {
 				n1.addSegOutTo(seg);
 				n2.addSegInFrom(seg);
 				//add segment to segment list
-				if(this.segments.containsKey(roadID)){
-					this.segments.get(roadID).add(seg);
+				if(graph.segments.containsKey(roadID)){
+					graph.segments.get(roadID).add(seg);
 				}else{
 					List<Segment> segs = new ArrayList<>();
 					segs.add(seg);
-					this.segments.put(roadID, segs);
+					graph.segments.put(roadID, segs);
 				}
 				/*
 				 * Load segments to roads
